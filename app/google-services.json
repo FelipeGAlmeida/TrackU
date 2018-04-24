@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "857398270620",
+    "firebase_url": "https://tracku-fgapps.firebaseio.com",
+    "project_id": "tracku-fgapps",
+    "storage_bucket": "tracku-fgapps.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857398270620:android:ce987fd8a1bdb5e0",
+        "android_client_info": {
+          "package_name": "com.fgapps.tracku"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "857398270620-9ip385341nb6ub3tb0r4io5795sch35f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fgapps.tracku",
+            "certificate_hash": "96d1d2ce066f8b88a0e21880bcc3b0c55f383907"
+          }
+        },
+        {
+          "client_id": "857398270620-plms5a45vuivu0gth5rolujb0jnmbk05.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGtepdvqYyObWbBEZ6mdPCYYJ3WN0oB6k"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "857398270620-plms5a45vuivu0gth5rolujb0jnmbk05.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

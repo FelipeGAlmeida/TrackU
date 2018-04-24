@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TrackU</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="default_notification_channel_id">push_id_01</string>
+</resources>

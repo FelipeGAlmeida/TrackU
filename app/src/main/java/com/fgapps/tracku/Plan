@@ -1,0 +1,31 @@
+****************************************************************************************************
+                                            TRACKU
+                                por Felipe Godinho de Almeida
+****************************************************************************************************
+
+Escopo inicial:
+
+ O usuário terá uma lista de contatos com outros usuários do aplicativo;
+ - deve conseguir realizar operações CRUD; OK
+ - deve ser realizado cadastro por meio do número de telefone; OK
+ - todos os contatos devem estar dispostos em uma lista de fácil acesso; OK
+ - deve ser possível a edição do nome do contato; OK
+ - deve ser possível a exclusão do contato; OK
+
+ O usuário pode escolher um dos seus contatos para rastrear;
+ - deve ser enviado um push notification ao contato informando e pedindo permissão para o
+ recebimento das informações de rastreio; OK
+ - no Firebase, cada contato deve possuir um campo de usuários permitidos afim de ser verificada a
+ permissão de se enviar ou não a localização; OK
+
+ O usuário deve ver de tempos em tempos a localização do contato escolhido atualizando, em tempo
+ real; OK
+
+ Cada contato terá como informações: uid, nome, telefone, localização, tempo e foto; OK
+
+ Detalhamento das ações em serviço;
+ - deve ser questionado ao usuário o desejo de que o serviço fique ativo em background; OK
+ - deve haver um aviso, por meio de um push notification, que o serviço está em background; OK
+ - deve ser feita a verificação do campo de permitidos antes de começar a coleta da localização; OK
+
+****************************************************************************************************

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.fgapps.tracku">
+
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".activity.LoginActivity">
+            <!-- For app launcher (Default) -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="com.fgapps.tracku" />
+            </intent-filter>
+            <!-- To open app using link -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https"
+                    android:host="tracku.com"
+                    android:pathPrefix="/request">
+                </data>
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.MainActivity" />
+        <activity android:name=".activity.ConfigActivity"/>
+        <activity
+            android:name=".activity.ValidatorActivity"
+            android:windowSoftInputMode="stateVisible" />
+        <activity
+            android:name=".activity.ContactActivity"
+            android:windowSoftInputMode="stateVisible" />
+        <activity
+            android:name=".activity.MapsActivity"
+            android:label="@string/title_activity_maps" />
+
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <service
+            android:name=".service.LocationService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".service.DatabaseService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver android:name=".helper.MyReceiver" android:enabled="true" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
