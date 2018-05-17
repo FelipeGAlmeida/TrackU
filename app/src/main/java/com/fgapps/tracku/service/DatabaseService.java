@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.fgapps.tracku.database.RealtimeDatabase;
 import com.fgapps.tracku.helper.Constants;
@@ -26,9 +27,15 @@ public class DatabaseService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         running = true;
-        if(SyncDatabases.isOnline()) {
-            rtdb = new RealtimeDatabase();
-            rtdb.checkRequests(userphone);
+
+        if (userphone != null){
+            if (SyncDatabases.isOnline()) {
+                rtdb = new RealtimeDatabase();
+                rtdb.checkRequests(userphone);
+            }
+        }else{
+            stopSelf();
+            return START_NOT_STICKY;
         }
         return START_STICKY;
     }
