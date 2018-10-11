@@ -3,7 +3,6 @@ package com.fgapps.tracku.activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -17,25 +16,19 @@ import java.util.Locale;
 
 public class ConfigActivity extends AppCompatActivity {
 
-    private Switch swtKill;
-    private Button btnDw;
-    private Button btnUp;
-    private Button btnVoltar;
     private SeekBar skbDistancia;
     private TextView txtDistancia;
-
-    private ConfigListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config);
 
-        listener = new ConfigListener(this);
+        ConfigListener listener = new ConfigListener(this);
 
         SaveLoadService sls = SaveLoadService.getInstance(this);
 
-        swtKill = findViewById(R.id.kill_service_id);
+        Switch swtKill = findViewById(R.id.kill_service_id);
         swtKill.setOnCheckedChangeListener(listener);
         swtKill.setChecked(sls.getConfigService());
 
@@ -44,16 +37,16 @@ public class ConfigActivity extends AppCompatActivity {
         skbDistancia.setProgress(sls.getDistConfig());
         skbDistancia.setOnSeekBarChangeListener(listener);
 
-        btnDw = findViewById(R.id.btnDistDown);
+        Button btnDw = findViewById(R.id.btnDistDown);
         btnDw.setOnClickListener( (view) -> setDistance(false));
 
-        btnUp = findViewById(R.id.btnDistUp);
+        Button btnUp = findViewById(R.id.btnDistUp);
         btnUp.setOnClickListener( (view) -> setDistance(true));
 
         txtDistancia = findViewById(R.id.txtDistancia);
         txtDistancia.setText(setDistanceText(sls.getDistConfig()));
 
-        btnVoltar = findViewById(R.id.btnVoltarC_id);
+        Button btnVoltar = findViewById(R.id.btnVoltarC_id);
         btnVoltar.setOnClickListener(listener);
     }
 

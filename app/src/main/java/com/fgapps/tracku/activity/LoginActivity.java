@@ -52,10 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText editDDD;
     private EditText editNumber;
     private EditText editUsername;
-    private Button btnCadastrar;
     private ImageView imgPhoto;
-
-    private LoginListener listener;
 
     private boolean hasPhoto;
 
@@ -79,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
             }catch (Exception e){
                 e.printStackTrace();
             }
-        }else if(!checkRWPermission(this)){
+        }else if(checkRWPermission(this)){
             try {
                 requestPermissionForRW(this);
             }catch (Exception e){
@@ -91,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         db_initializer.onCreate(db_initializer.getReadableDatabase());
 
         FirebaseUser u = Authorization.getFirebaseAuth().getCurrentUser();
-        if(u != null && !u.getPhoneNumber().isEmpty()){
+        if(u != null && u.getPhoneNumber() != null && !u.getPhoneNumber().isEmpty()){
 
             SQLiteDatabase db = db_initializer.getWritableDatabase();
             String[] fields = {
@@ -118,13 +115,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
-        listener = new LoginListener(this);
+        LoginListener listener = new LoginListener(this);
 
         editDDI = findViewById(R.id.editUserDDI_id);
         editDDD = findViewById(R.id.editUserDDD_id);
         editNumber = findViewById(R.id.editUserNumber_id);
         editUsername = findViewById(R.id.editUsername_id);
-        btnCadastrar = findViewById(R.id.btnCadastrar_id);
+        Button btnCadastrar = findViewById(R.id.btnCadastrar_id);
         btnCadastrar.setOnClickListener(listener);
         imgPhoto = findViewById(R.id.photo_id);
         imgPhoto.setOnClickListener(listener);
@@ -162,12 +159,12 @@ public class LoginActivity extends AppCompatActivity {
     public static boolean checkRWPermission(Context c){
         if(Build.VERSION.SDK_INT >= 23){
             int result = c.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-            return result == PackageManager.PERMISSION_GRANTED;
+            return result != PackageManager.PERMISSION_GRANTED;
         }
-        return false;
+        return true;
     }
 
-    public static void requestPermissionForSendSMS(Activity a) throws Exception {
+    public static void requestPermissionForSendSMS(Activity a) {
         try {
             ActivityCompat.requestPermissions(a, new String[]{Manifest.permission.SEND_SMS},
                     SMS_REQUEST_CODE);
@@ -177,23 +174,21 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public static void requestPermissionForUseGPS(Activity a) throws Exception {
+    public static void requestPermissionForUseGPS(Activity a) {
         try {
             ActivityCompat.requestPermissions(a, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     GPS_REQUEST_CODE);
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
         }
     }
 
-    public static void requestPermissionForRW(Activity a) throws Exception {
+    public static void requestPermissionForRW(Activity a) {
         try {
             ActivityCompat.requestPermissions(a, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     RW_REQUEST_CODE);
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
         }
     }
 
@@ -211,7 +206,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             }else if(requestCode == GPS_REQUEST_CODE){
-                if(!checkRWPermission(this)) {
+                if(checkRWPermission(this)) {
                     try {
                         requestPermissionForRW(this);
                     } catch (Exception e) {

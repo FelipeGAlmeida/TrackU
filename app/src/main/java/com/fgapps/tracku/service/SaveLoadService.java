@@ -1,12 +1,10 @@
 package com.fgapps.tracku.service;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.fgapps.tracku.helper.Constants;
-
-import java.util.HashMap;
 
 /**
  * Created by (Engenharia) Felipe on 26/03/2018.
@@ -14,8 +12,9 @@ import java.util.HashMap;
 
 public class SaveLoadService {
 
+    @SuppressLint("StaticFieldLeak")
     private static SaveLoadService slService;
-    private static Context mContext;
+    private Context mContext;
 
     private SharedPreferences mShPref;
     private SharedPreferences.Editor mShEditor;
@@ -38,7 +37,7 @@ public class SaveLoadService {
             mShPref = mContext.getSharedPreferences(Constants.USERDATA, Constants.SH_MODE);
     }
 
-    public boolean saveDeletedList(String phone){
+    public void saveDeletedList(String phone){
         initUserFile();
         String del = mShPref.getString(Constants.DEL, "");
 
@@ -48,10 +47,10 @@ public class SaveLoadService {
         else del += "&"+phone;
         mShEditor.putString(Constants.DEL, del);
 
-        return mShEditor.commit();
+        mShEditor.apply();
     }
 
-    public String[] loadDeletedList(){
+    String[] loadDeletedList(){
         initUserFile();
         String del = mShPref.getString(Constants.DEL, "");
         if(!del.isEmpty()){
@@ -65,15 +64,15 @@ public class SaveLoadService {
     private void clearDeletedList(){
         mShEditor = mShPref.edit();
         mShEditor.remove(Constants.DEL);
-        mShEditor.commit();
+        mShEditor.apply();
     }
 
-    public boolean saveConfigService(boolean b){
+    public void saveConfigService(boolean b){
         initUserFile();
 
         mShEditor = mShPref.edit();
         mShEditor.putBoolean(Constants.CONFIG_SERVICE, b);
-        return mShEditor.commit();
+        mShEditor.apply();
     }
 
     public boolean getConfigService(){
@@ -82,12 +81,12 @@ public class SaveLoadService {
         return mShPref.getBoolean(Constants.CONFIG_SERVICE, false);
     }
 
-    public boolean saveConfigMap(int b){
+    public void saveConfigMap(int b){
         initUserFile();
 
         mShEditor = mShPref.edit();
         mShEditor.putInt(Constants.MAP_TYPE, b);
-        return mShEditor.commit();
+        mShEditor.apply();
     }
 
     public int getConfigMap(){
@@ -96,12 +95,12 @@ public class SaveLoadService {
         return mShPref.getInt(Constants.MAP_TYPE, 1);
     }
 
-    public boolean saveDistConfig(int d){
+    public void saveDistConfig(int d){
         initUserFile();
 
         mShEditor = mShPref.edit();
         mShEditor.putInt(Constants.DISTANCE, d);
-        return mShEditor.commit();
+        mShEditor.apply();
     }
 
     public int getDistConfig(){

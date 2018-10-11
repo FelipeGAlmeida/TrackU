@@ -15,7 +15,7 @@ import com.fgapps.tracku.service.SyncDatabases;
 
 public class ContactListener implements View.OnClickListener{
 
-    ContactActivity activity;
+    private ContactActivity activity;
 
     public ContactListener(ContactActivity activity) {
         this.activity = activity;

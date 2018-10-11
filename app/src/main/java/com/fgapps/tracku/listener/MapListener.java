@@ -31,29 +31,29 @@ public class MapListener implements View.OnClickListener, SeekBar.OnSeekBarChang
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.btnMode_id) {
-            if (activity.getMode() == 0) { //Tracking contact
+            if (MapsActivity.getMode() == 0) { //Tracking contact
                 activity.getBtnMode().setImageResource(R.drawable.contact_icon);
                 Toast.makeText(activity, "Mostrando sua localização", Toast.LENGTH_LONG).show();
-                activity.setMode(1);
+                MapsActivity.setMode(1);
                 String[] loc = LocationService.getSeparatedLocation();
-                if (loc != null) activity.updateMap(loc[0], loc[1], true);
+                if (loc != null) MapsActivity.updateMap(loc[0], loc[1], true);
                 else
                     Toast.makeText(activity, "Verifique se sua localização está ativada", Toast.LENGTH_LONG).show();
             } else { //tracking user
                 activity.getBtnMode().setImageResource(R.drawable.user_icon);
                 Toast.makeText(activity, "Mostrando localização do contato", Toast.LENGTH_LONG).show();
-                activity.setMode(0);
-                String[] loc = activity.getSeparatedLocation();
-                if (loc != null) activity.updateMap(loc[0], loc[1], false);
+                MapsActivity.setMode(0);
+                String[] loc = MapsActivity.getSeparatedLocation();
+                if (loc != null) MapsActivity.updateMap(loc[0], loc[1], false);
             }
         }else if(view.getId() == R.id.btnType_id) {
             SaveLoadService sls = new SaveLoadService(activity);
-            if (activity.getType() == GoogleMap.MAP_TYPE_HYBRID) {
-                activity.setType(GoogleMap.MAP_TYPE_NORMAL);
+            if (MapsActivity.getType() == GoogleMap.MAP_TYPE_HYBRID) {
+                MapsActivity.setType(GoogleMap.MAP_TYPE_NORMAL);
                 activity.getBtnType().setImageResource(R.drawable.satellite_icon);
                 sls.saveConfigMap(GoogleMap.MAP_TYPE_NORMAL);
             } else {
-                activity.setType(GoogleMap.MAP_TYPE_HYBRID);
+                MapsActivity.setType(GoogleMap.MAP_TYPE_HYBRID);
                 activity.getBtnType().setImageResource(R.drawable.normal_icon);
                 sls.saveConfigMap(GoogleMap.MAP_TYPE_HYBRID);
             }
@@ -61,8 +61,8 @@ public class MapListener implements View.OnClickListener, SeekBar.OnSeekBarChang
             activity.setZoom(17);
         }else if(view.getId()== R.id.voltarMap_id){
             if(SyncDatabases.isOnline())
-                rtdb.stopGettingLocation(activity.getPhone());
-            activity.setMode(0);
+                rtdb.stopGettingLocation(MapsActivity.getPhone());
+            MapsActivity.setMode(0);
             Intent i = new Intent(activity, MainActivity.class);
             activity.startActivity(i);
         }

@@ -1,5 +1,6 @@
 package com.fgapps.tracku.listener;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
@@ -37,6 +38,7 @@ public class MainListener implements ListListener, View.OnClickListener {
     private HashMap<Integer, Drawable> backs;
 
 
+    @SuppressLint("UseSparseArrays")
     public MainListener(MainActivity activity) {
         this.activity = activity;
         this.backs = new HashMap<>();
@@ -44,8 +46,7 @@ public class MainListener implements ListListener, View.OnClickListener {
 
     @Override //Lista
     public void OnClick(View v, int pos) {
-        int p = Integer.valueOf(pos);
-        if(activity.getSelected().isEmpty()){
+        if(MainActivity.getSelected().isEmpty()){
 
             String phone = ((TextView)v.findViewById(R.id.thephone_id)).getText().toString();
             String name = ((TextView)v.findViewById(R.id.name_id)).getText().toString();
@@ -59,29 +60,28 @@ public class MainListener implements ListListener, View.OnClickListener {
             activity.startActivity(intent);
 
             selectionControl(false);
-        }else if(!activity.getSelected().containsKey(p)) {
-            backs.put(p,v.findViewById(R.id.modelLayout_id).getBackground());
+        }else if(!MainActivity.getSelected().containsKey(pos)) {
+            backs.put(pos,v.findViewById(R.id.modelLayout_id).getBackground());
             v.findViewById(R.id.modelLayout_id).setBackgroundResource(R.drawable.list_selected_back);
-            activity.getSelected().put(p,(CardView)v);
+            MainActivity.getSelected().put(pos,(CardView)v);
             buttonsControl();
         }else{
-            v.findViewById(R.id.modelLayout_id).setBackground(backs.get(p));
-            activity.getSelected().remove(p);
+            v.findViewById(R.id.modelLayout_id).setBackground(backs.get(pos));
+            MainActivity.getSelected().remove(pos);
             buttonsControl();
         }
     }
 
     @Override
     public void OnLongClick(View v, int pos) {
-        int p = Integer.valueOf(pos);
-        if(!activity.getSelected().containsKey(p)) {
-            backs.put(p,v.findViewById(R.id.modelLayout_id).getBackground());
+        if(!MainActivity.getSelected().containsKey(pos)) {
+            backs.put(pos,v.findViewById(R.id.modelLayout_id).getBackground());
             v.findViewById(R.id.modelLayout_id).setBackgroundResource(R.drawable.list_selected_back);
-            activity.getSelected().put(p,(CardView)v);
+            MainActivity.getSelected().put(pos,(CardView)v);
             buttonsControl();
         }else{
-            v.findViewById(R.id.modelLayout_id).setBackground(backs.get(p));
-            activity.getSelected().remove(p);
+            v.findViewById(R.id.modelLayout_id).setBackground(backs.get(pos));
+            MainActivity.getSelected().remove(pos);
             buttonsControl();
         }
     }
@@ -97,7 +97,7 @@ public class MainListener implements ListListener, View.OnClickListener {
                 Toast.makeText(activity, "Você precisa de internet para realizar esta ação", Toast.LENGTH_LONG).show();
             }
         }else if(view.getId() == R.id.delete_id) {
-            if(activity.getSelected().isEmpty()){
+            if(MainActivity.getSelected().isEmpty()){
                 Toast.makeText(activity, "Selecione ao menos um contato para deletar", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -129,8 +129,8 @@ public class MainListener implements ListListener, View.OnClickListener {
             activity.startActivity(intent);
         }else if(view.getId() == R.id.editName_id){
             CardView c = null;
-            for (Integer i : activity.getSelected().keySet())
-                c = activity.getSelected().get(i);
+            for (Integer i : MainActivity.getSelected().keySet())
+                c = MainActivity.getSelected().get(i);
             if(c!=null) {
                 String phone = ((TextView) c.findViewById(R.id.thephone_id)).getText().toString();
                 String name = ((TextView) c.findViewById(R.id.name_id)).getText().toString();
@@ -142,10 +142,10 @@ public class MainListener implements ListListener, View.OnClickListener {
     }
 
     private void buttonsControl(){
-        if(activity.getSelected().isEmpty()){
+        if(MainActivity.getSelected().isEmpty()){
             activity.getBtnEditName().setVisibility(View.INVISIBLE);
             activity.getBtnDelete().setVisibility(View.INVISIBLE);
-        }else if(activity.getSelected().size()>1){
+        }else if(MainActivity.getSelected().size()>1){
             activity.getBtnEditName().setVisibility(View.INVISIBLE);
             activity.getBtnDelete().setVisibility(View.VISIBLE);
         }else{
@@ -155,13 +155,13 @@ public class MainListener implements ListListener, View.OnClickListener {
     }
 
     private void selectionControl(boolean delete){
-        for (Integer i : activity.getSelected().keySet()) {
-            CardView c = activity.getSelected().get(i);
+        for (Integer i : MainActivity.getSelected().keySet()) {
+            CardView c = MainActivity.getSelected().get(i);
             String phone = ((TextView)c.findViewById(R.id.thephone_id)).getText().toString();
             if(delete) {
                 RealtimeDatabase rtdb = new RealtimeDatabase();
-                Contact rmv = activity.getContact(phone);
-                activity.getContacts().remove(rmv);
+                Contact rmv = MainActivity.getContact(phone);
+                MainActivity.getContacts().remove(rmv);
                 if(SyncDatabases.isOnline())
                     rtdb.deleteContact(phone);
                 else{
@@ -171,10 +171,10 @@ public class MainListener implements ListListener, View.OnClickListener {
                 SQLiteDatabase db = LoginActivity.getDb_initializer().getWritableDatabase();
                 SQLDefs.deleteContact(db, phone);
                 StorageDatabase sd = new StorageDatabase();
-                sd.deleteImage(phone);
-                Toast.makeText(activity.getApplicationContext(), rmv.getName()+" removido com sucesso!", Toast.LENGTH_LONG).show();
+                if(sd.deleteImage(phone) && rmv != null)
+                    Toast.makeText(activity.getApplicationContext(), rmv.getName()+" removido com sucesso!", Toast.LENGTH_LONG).show();
             }
         }
-        activity.getSelected().clear();
+        MainActivity.getSelected().clear();
     }
 }

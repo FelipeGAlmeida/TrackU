@@ -23,7 +23,7 @@ public class Utils {
     public static String getFormattedDateTime(){
         Calendar calendar = Calendar.getInstance();
 
-        String time = "desconhecida", zero = "";
+        String time;
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         int month = calendar.get(Calendar.MONTH)+1;
         int year = calendar.get(Calendar.YEAR);
@@ -55,7 +55,7 @@ public class Utils {
         return s;
     }
 
-    public static String getNameFromPhone(String phone){
+    static String getNameFromPhone(String phone){
         SQLDatabase db_initializer = new SQLDatabase(DatabaseService.getDatabaseService());
         SQLiteDatabase db = db_initializer.getReadableDatabase();
         String[] fields = {
@@ -70,7 +70,7 @@ public class Utils {
         return phone;
     }
 
-    public static void sendWppMessage(String phone){
+    static void sendWppMessage(String phone){
         try {
             PackageManager packageManager = MainActivity.currentActivity.getPackageManager();
             Intent i = new Intent(Intent.ACTION_VIEW);
@@ -93,7 +93,27 @@ public class Utils {
         }
     }
 
-    public static boolean wppInstalled() {
+    static void sendWppMessage2(String phone){
+        try {
+            PackageManager packageManager = MainActivity.currentActivity.getPackageManager();
+            Intent i = new Intent(Intent.ACTION_VIEW);
+
+            String url = "https://api.whatsapp.com/send?phone="+ phone +
+                    "&text=" + URLEncoder.encode("Olá, gostaria de te adicionar como contato no *TrackU*.\n\n" +
+                    "Por favor faça download e instale o aplicativo pelo link abaixo:\n" +
+                    "https://tracku-fgapps.firebaseapp.com/\n\n" +
+                    "Obrigado.", "UTF-8");
+            i.setPackage("com.whatsapp");
+            i.setData(Uri.parse(url));
+            if (i.resolveActivity(packageManager) != null) {
+                MainActivity.currentActivity.startActivity(i);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    static boolean wppInstalled() {
         PackageManager pm = MainActivity.currentActivity.getPackageManager();
         boolean app_installed;
         try {

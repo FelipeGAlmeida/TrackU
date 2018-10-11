@@ -14,7 +14,7 @@ import com.fgapps.tracku.service.SaveLoadService;
 
 public class ConfigListener implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
-    ConfigActivity activity;
+    private ConfigActivity activity;
 
     public ConfigListener(ConfigActivity activity) {
         this.activity = activity;

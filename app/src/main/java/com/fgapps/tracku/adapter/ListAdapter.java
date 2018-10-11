@@ -2,6 +2,7 @@ package com.fgapps.tracku.adapter;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,22 +26,23 @@ import java.util.ArrayList;
 
 public class ListAdapter extends RecyclerView.Adapter<ListModel> {
 
-    ArrayList<Contact> contacts;
-    RealtimeDatabase rtdb;
+    private ArrayList<Contact> contacts;
+    private RealtimeDatabase rtdb;
 
     public ListAdapter(ArrayList<Contact> contacts) {
         this.contacts = contacts;
         this.rtdb = new RealtimeDatabase();
     }
 
+    @NonNull
     @Override
-    public ListModel onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ListModel onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.model_list, parent, false);
         return new ListModel(v);
     }
 
     @Override
-    public void onBindViewHolder(ListModel holder, int position) {
+    public void onBindViewHolder(@NonNull ListModel holder, int position) {
         holder.getTxtName().setText(contacts.get(position).getName());
         holder.getTxtLocation().setText(contacts.get(position).getLocation());
         holder.getTxtTime().setText(contacts.get(position).getTime());

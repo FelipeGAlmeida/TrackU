@@ -9,7 +9,6 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.fgapps.tracku.activity.LoginActivity;
 import com.fgapps.tracku.activity.MainActivity;
@@ -153,15 +152,18 @@ public class LocationService extends Service {
     public static boolean isGpsEnabled(){
         LocationManager lm;
         if(MainActivity.currentActivity != null) {
-            lm = (LocationManager) MainActivity.currentActivity.getSystemService(MainActivity.currentActivity.LOCATION_SERVICE);
+            lm = (LocationManager) MainActivity.currentActivity.getSystemService(LOCATION_SERVICE);
         }else{
-            lm = (LocationManager) locationService.getSystemService(locationService.LOCATION_SERVICE);
+            lm = (LocationManager) locationService.getSystemService(LOCATION_SERVICE);
         }
-        boolean enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if(!enabled && MainActivity.currentActivity != null ){
-            Dialogs.showGpsDialog();
+        if(lm != null) {
+            boolean enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (!enabled && MainActivity.currentActivity != null) {
+                Dialogs.showGpsDialog();
+            }
+            return enabled;
         }
-        return enabled;
+        return false;
     }
 
     public static String[] getSeparatedLocation(){
@@ -195,9 +197,9 @@ public class LocationService extends Service {
         return locationService;
     }
 
-    public static boolean isRunning() {
-        return running;
-    }
+    //public static boolean isRunning() { not used yet
+    //    return running;
+    //}
 
     public class LocationBinder extends Binder {
         public LocationService getService() { return LocationService.this; }

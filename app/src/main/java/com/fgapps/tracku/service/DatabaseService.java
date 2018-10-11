@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.fgapps.tracku.database.RealtimeDatabase;
 import com.fgapps.tracku.helper.Constants;
@@ -19,12 +18,11 @@ public class DatabaseService extends Service {
 
     private static DatabaseService databaseService;
 
-    private RealtimeDatabase rtdb;
     private static boolean running = false;
     private String userphone;
 
     public DatabaseService() {
-        this.databaseService = this;
+        databaseService = this;
     }
 
     @Override
@@ -33,7 +31,7 @@ public class DatabaseService extends Service {
 
         if (userphone != null){
             if (SyncDatabases.isOnline()) {
-                rtdb = new RealtimeDatabase();
+                RealtimeDatabase rtdb = new RealtimeDatabase();
                 rtdb.checkRequests(userphone);
             }
         }else{
@@ -76,9 +74,9 @@ public class DatabaseService extends Service {
         return databaseBinder;
     }
 
-    public static boolean isRunning() {
-        return running;
-    }
+    //public static boolean isRunning() { not used yet
+    //    return running;
+    //}
 
     public static DatabaseService getDatabaseService() {
         return databaseService;

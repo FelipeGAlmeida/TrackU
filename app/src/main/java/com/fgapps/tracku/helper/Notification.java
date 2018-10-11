@@ -51,11 +51,13 @@ public class Notification {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(id, n);
-        id++;
+        if(notificationManager != null) {
+            notificationManager.notify(id, n);
+            id++;
+        }
     }
 
-    public static void sendAllowedNotification(Context c, String phone) {
+    static void sendAllowedNotification(Context c, String phone) {
         Intent intent = new Intent(c, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(Constants.PHONE, phone);
@@ -84,11 +86,13 @@ public class Notification {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(id, n);
-        id++;
+        if(notificationManager != null) {
+            notificationManager.notify(id, n);
+            id++;
+        }
     }
 
-    public static void sendDeniedNotification(Context c, String phone) {
+    static void sendDeniedNotification(Context c, String phone) {
         Intent intent = new Intent(c, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(Constants.PHONE, phone);
@@ -117,8 +121,10 @@ public class Notification {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(id, n);
-        id++;
+        if(notificationManager != null) {
+            notificationManager.notify(id, n);
+            id++;
+        }
     }
 
     public static void dismissAll(){
@@ -131,13 +137,12 @@ public class Notification {
     public static android.app.Notification getFixedNotification(Context c){
         Intent notificationIntent = new Intent(c, LoginActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(c, 999, notificationIntent, 0);
-        android.app.Notification notification = new android.app.Notification.Builder(c)
+        return new android.app.Notification.Builder(c)
                 .setContentTitle("Compartilhando localização")
                 .setContentText("Para parar, vá em Configurações")
                 .setSmallIcon(R.drawable.logo_app)
                 .setContentIntent(pendingIntent)
                 .build();
-        return notification;
     }
 
 }

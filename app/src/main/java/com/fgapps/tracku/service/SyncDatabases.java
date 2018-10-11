@@ -20,7 +20,7 @@ public class SyncDatabases extends Thread {
 
     public static ArrayList<Contact> contacts2Delete;
 
-    public SyncDatabases(Activity activity) {
+    public SyncDatabases() {
         contacts2Delete = new ArrayList<>();
     }
 
@@ -48,13 +48,16 @@ public class SyncDatabases extends Thread {
     }
 
     public static boolean isOnline() {
-        ConnectivityManager cm = null;
+        ConnectivityManager cm;
         if(MainActivity.currentActivity != null){
             cm =(ConnectivityManager) MainActivity.currentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         }else{
             cm =(ConnectivityManager) DatabaseService.getDatabaseService().getSystemService(Context.CONNECTIVITY_SERVICE);
         }
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
+        if(cm != null) {
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            return netInfo != null && netInfo.isConnectedOrConnecting();
+        }
+        return false;
     }
 }

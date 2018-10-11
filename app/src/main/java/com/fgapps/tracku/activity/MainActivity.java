@@ -1,5 +1,6 @@
 package com.fgapps.tracku.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -43,47 +44,39 @@ import static android.os.SystemClock.sleep;
 
 public class MainActivity extends AppCompatActivity {
 
+    @SuppressLint("StaticFieldLeak")
     public static Activity currentActivity;
-    private LocationService locationService;
-    private DatabaseService databaseService;
 
     private static ArrayList<Contact> contacts;
     private static HashMap<Integer,CardView> selected;
     private static boolean isSharing;
 
-    private RecyclerView rcyView;
-    private FloatingActionButton btnAdd;
     private FloatingActionButton btnStop;
     private ImageView btnEditName;
     private ImageView btnDelete;
-    private ImageView btnSettings;
-    private ImageView btnLogoff;
     private TextView txtText1;
     private TextView txtText2;
 
     private RealtimeDatabase rtdb;
-    private MainListener listener;
     private ListAdapter adapter;
     private Intent locationIntent;
     private Intent databaseIntent;
     private Thread t;
 
-    private boolean locationBound;
-    private boolean databaseBound;
-
     @Override
+    @SuppressLint("UseSparseArrays")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         currentActivity = this;
 
-        listener = new MainListener(this);
+        MainListener listener = new MainListener(this);
 
         contacts = new ArrayList<>();
         selected = new HashMap<>();
 
-        rcyView = findViewById(R.id.recycler_id);
+        RecyclerView rcyView = findViewById(R.id.recycler_id);
         rcyView.addOnItemTouchListener(new ListClick(getApplicationContext(), rcyView, listener));
 
         adapter = new ListAdapter(contacts);
@@ -96,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         txtText1 = findViewById(R.id.text1_id);
         txtText2 = findViewById(R.id.text2_id);
 
-        btnAdd = findViewById(R.id.fabAdd_id);
+        FloatingActionButton btnAdd = findViewById(R.id.fabAdd_id);
         btnAdd.setOnClickListener(listener);
 
         btnStop = findViewById(R.id.fabStop_id);
@@ -108,15 +101,15 @@ public class MainActivity extends AppCompatActivity {
         btnDelete = findViewById(R.id.delete_id);
         btnDelete.setOnClickListener(listener);
 
-        btnSettings = findViewById(R.id.settings_id);
+        ImageView btnSettings = findViewById(R.id.settings_id);
         btnSettings.setOnClickListener(listener);
 
-        btnLogoff = findViewById(R.id.logoff_id);
+        ImageView btnLogoff = findViewById(R.id.logoff_id);
         btnLogoff.setOnClickListener(listener);
 
         rtdb = new RealtimeDatabase();
 
-        SyncDatabases sync = new SyncDatabases(this);
+        SyncDatabases sync = new SyncDatabases();
         sync.start();
 
         t = new Thread(activityControl);
@@ -161,20 +154,12 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             while(MainActivity.currentActivity instanceof MainActivity){
                 if(SyncDatabases.isOnline()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
+                    runOnUiThread(() -> adapter.notifyDataSetChanged());
                     rtdb.isSharingLocation();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(isSharing) btnStop.setVisibility(View.VISIBLE);
-                            else btnStop.setVisibility(View.INVISIBLE);
+                    runOnUiThread(() -> {
+                        if(isSharing) btnStop.setVisibility(View.VISIBLE);
+                        else btnStop.setVisibility(View.INVISIBLE);
 
-                        }
                     });
                 }else{
                     btnStop.setVisibility(View.INVISIBLE);
@@ -191,12 +176,7 @@ public class MainActivity extends AppCompatActivity {
         currentActivity = this;
         startServices();
         getContactsFromDb(false);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                LocationService.isGpsEnabled();
-            }
-        },3000);
+        new Handler().postDelayed(LocationService::isGpsEnabled,3000);
         adapter.notifyDataSetChanged();
         if(t.getState() == Thread.State.TERMINATED){
             t = new Thread(activityControl);
@@ -260,14 +240,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            LocationService.LocationBinder binder = (LocationService.LocationBinder)service;
-            locationService = binder.getService(); //get service
-            locationBound = true;
+            //LocationService.LocationBinder binder = (LocationService.LocationBinder)service; not used yet
+            //LocationService locationService = binder.getService();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            locationBound = false;
         }
     };
 
@@ -275,14 +253,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            DatabaseService.DatabaseBinder binder = (DatabaseService.DatabaseBinder) service;
-            databaseService = binder.getService(); //get service
-            databaseBound= true;
+            //DatabaseService.DatabaseBinder binder = (DatabaseService.DatabaseBinder) service; not used yet
+            //DatabaseService databaseService = binder.getService();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            databaseBound = false;
         }
     };
 

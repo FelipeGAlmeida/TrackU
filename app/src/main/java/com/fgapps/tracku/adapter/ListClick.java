@@ -14,11 +14,9 @@ import com.fgapps.tracku.helper.ListListener;
 
 public class ListClick implements RecyclerView.OnItemTouchListener{
 
-    ListListener listListener;
-    GestureDetector gestureDetector;
+    private GestureDetector gestureDetector;
 
     public ListClick(Context context, final RecyclerView recyclerView, final ListListener listListener) {
-        this.listListener = listListener;
         this.gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener(){
             @Override
             public boolean onSingleTapUp(MotionEvent e) {

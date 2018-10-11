@@ -18,10 +18,6 @@ public class ValidatorActivity extends AppCompatActivity {
     private EditText editD4;
     private EditText editD5;
     private EditText editD6;
-    private Button btnLimpar;
-    private Button btnCancelar;
-
-    private ValidatorListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +33,7 @@ public class ValidatorActivity extends AppCompatActivity {
             finish();
         }
 
-        listener = new ValidatorListener(this, id);
+        ValidatorListener listener = new ValidatorListener(this, id);
 
         editD1 = findViewById(R.id.editD1_id);
         editD1.addTextChangedListener(listener);
@@ -51,9 +47,9 @@ public class ValidatorActivity extends AppCompatActivity {
         editD5.addTextChangedListener(listener);
         editD6 = findViewById(R.id.editD6_id);
         editD6.addTextChangedListener(listener);
-        btnCancelar = findViewById(R.id.btnCancelar_id);
+        Button btnCancelar = findViewById(R.id.btnCancelar_id);
         btnCancelar.setOnClickListener(listener);
-        btnLimpar = findViewById(R.id.btnLimpar_id);
+        Button btnLimpar = findViewById(R.id.btnLimpar_id);
         btnLimpar.setOnClickListener(listener);
     }
 

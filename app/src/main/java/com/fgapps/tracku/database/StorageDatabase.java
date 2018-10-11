@@ -21,7 +21,7 @@ public class StorageDatabase {
     private static StorageReference mDb;
 
     public StorageDatabase() {
-        this.getInstance();
+        getInstance();
     }
 
     public static StorageReference getInstance(){
@@ -57,12 +57,13 @@ public class StorageDatabase {
         return myBitmap;
     }
 
-    public void deleteImage(String phone){
+    public boolean deleteImage(String phone){
         StorageReference ref0 = mDb.child(Constants.PHOTO).child(phone);
         ref0.delete();
         File f = getOutputMediaFile(phone);
         if(f != null && f.exists())
-            f.delete();
+            return f.delete();
+        return false;
     }
 
     private File getOutputMediaFile(String photo){
@@ -79,8 +80,7 @@ public class StorageDatabase {
         }
 
         String mImageName=photo+".jpg";
-        File mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
-        return mediaFile;
+        return new File(mediaStorageDir.getPath() + File.separator + mImageName);
     }
 
 }

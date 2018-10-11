@@ -15,22 +15,19 @@ public class ContactActivity extends AppCompatActivity {
     private EditText editDDI;
     private EditText editDDD;
     private EditText editNumber;
-    private Button btnAdcionar;
-    private Button btnCancelar;
-    private ContactListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
 
-        listener = new ContactListener(this);
+        ContactListener listener = new ContactListener(this);
 
         editDDI = findViewById(R.id.editContactDDI_id);
         editDDD = findViewById(R.id.editContactDDD_id);
         editNumber = findViewById(R.id.editContactNumber_id);
-        btnAdcionar = findViewById(R.id.adicionar_id);
-        btnCancelar = findViewById(R.id.cancelar_id);
+        Button btnAdcionar = findViewById(R.id.adicionar_id);
+        Button btnCancelar = findViewById(R.id.cancelar_id);
 
         SimpleMaskFormatter mask_DDI = new SimpleMaskFormatter("+NN");
         SimpleMaskFormatter mask_DDD = new SimpleMaskFormatter("NN");

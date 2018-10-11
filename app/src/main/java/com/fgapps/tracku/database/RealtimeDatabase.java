@@ -3,6 +3,7 @@ package com.fgapps.tracku.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.fgapps.tracku.activity.LoginActivity;
@@ -34,7 +35,7 @@ public class RealtimeDatabase{
 
 
     public RealtimeDatabase() {
-        this.getInstance();
+        getInstance();
     }
 
     public static DatabaseReference getInstance(){
@@ -64,8 +65,11 @@ public class RealtimeDatabase{
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean exists = false;
                 for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()){
                     if(messageSnapshot.getKey().equals(phoneNumber)) {
+                        exists = true;
+
                         String uid = (String) messageSnapshot.child(Constants.UID).getValue();
                         String name = (String) messageSnapshot.child(Constants.NAME).getValue();
                         String phone = (String) messageSnapshot.child(Constants.PHONE).getValue();
@@ -85,16 +89,20 @@ public class RealtimeDatabase{
                         SQLDefs.insert(db, Constants.CONTACT, values);
 
                         DatabaseReference ref0 = mDb.child(Constants.DATABASE).child(LoginActivity.USERPHONE).child(Constants.CONTACTS);
-                        ref0.child(phone).setValue(0);
+                        if(phone != null) ref0.child(phone).setValue(0);
                     }
                 }
                 if(need_dismiss)
-                    Dialogs.dismissLoadingDialog(true);
+                    Dialogs.dismissLoadingDialog(exists);
+
+                if(!exists){
+                    Dialogs.showWppDialog2(phoneNumber);
+                }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                String a = "C:"+databaseError.getCode()+" M:"+databaseError.getMessage()+" D:"+databaseError.getDetails();
+                Log.v("FIREBASE_AUTH", "C:"+databaseError.getCode()+" M:"+databaseError.getMessage()+" D:"+databaseError.getDetails());
             }
         });
     }
@@ -133,7 +141,8 @@ public class RealtimeDatabase{
                     cv.put(Constants.TIME, time);
                     if(c.getName().equals("")) {
                         cv.put(Constants.NAME, name);
-                        MainActivity.getContact(phone).setName(name);
+                        Contact contact = MainActivity.getContact(phone);
+                        if(contact != null) c.setName(name);
                     }
                     SQLDefs.update(db, Constants.CONTACT, cv, Constants.PHONE, new String[]{phone});
                 }
@@ -215,13 +224,13 @@ public class RealtimeDatabase{
                     status = c.getInt((c.getColumnIndexOrThrow(SQLDefs.Contact_Table.COLUMN_STATUS)));
                 }
                 c.close();
-                if(p == 1){ //SIM
+                if(p != null && p == 1){ //SIM
                     SQLDefs.allowPhone(db, phone);
                     if(status == 2)
                         Dialogs.showAllowedLocationDialog(phone);
                     startGetingLocation(phone);
                     Dialogs.dismissLoadingDialog(false);
-                }else if(p == 0){ //NÃO
+                }else if(p != null && p == 0){ //NÃO
                     if(status == 0) { //NEGADO
                         MapsActivity.showAskAlertDialog();
                     }else {
@@ -258,7 +267,7 @@ public class RealtimeDatabase{
                 for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
                     String key = messageSnapshot.getKey();
                     Long r = (Long)messageSnapshot.getValue();
-                    if (r == 2) {
+                    if (r != null && r == 2) {
                         Notification.sendIncommingNotification(LocationService.getLocationService(), key);
                         Dialogs.showRequestLocationDialog(key);
                     }
@@ -272,7 +281,7 @@ public class RealtimeDatabase{
         });
     }
 
-    public void startGetingLocation(String phone){
+    private void startGetingLocation(String phone){
         DatabaseReference ref = mDb.child(Constants.DATABASE).child(phone).child(Constants.LOCATION);
         if(locationListener != null){
             ref.removeEventListener(locationListener);
@@ -282,9 +291,11 @@ public class RealtimeDatabase{
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String l = (String)dataSnapshot.getValue();
-                String[] loc = l.split(",");
-                if(loc.length>1)
-                    MapsActivity.updateMap(loc[0], loc[1], false);
+                if(l != null) {
+                    String[] loc = l.split(",");
+                    if (loc.length > 1)
+                        MapsActivity.updateMap(loc[0], loc[1], false);
+                }
             }
 
             @Override
@@ -309,7 +320,7 @@ public class RealtimeDatabase{
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
                     Long r = (Long)messageSnapshot.getValue();
-                    if (r == 1) {
+                    if (r != null && r == 1) {
                         MainActivity.isSharing(true);
                         return;
                     }

@@ -7,6 +7,7 @@ import android.provider.BaseColumns;
 
 import com.fgapps.tracku.activity.MainActivity;
 import com.fgapps.tracku.helper.Constants;
+import com.fgapps.tracku.model.Contact;
 
 /**
  * Created by (Engenharia) Felipe on 29/03/2018.
@@ -20,7 +21,7 @@ public class SQLDefs {
     private static final String LIKE_MOD = " LIKE ?";
 
     //Queries
-    public static final String SQL_CREATE_CONTACT =
+    static final String SQL_CREATE_CONTACT =
             "CREATE TABLE IF NOT EXISTS " + Contact_Table.TABLE_NAME + " (" +
                     Contact_Table._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     Contact_Table.COLUMN_NAME + TEXT_TYPE + COMMA_SEP +
@@ -31,7 +32,7 @@ public class SQLDefs {
                     Contact_Table.COLUMN_UID + TEXT_TYPE + COMMA_SEP +
                     Contact_Table.COLUMN_STATUS + " INTEGER )";
 
-    public static final String SQL_CREATE_USER =
+    static final String SQL_CREATE_USER =
             "CREATE TABLE IF NOT EXISTS " + User_Table.TABLE_NAME + " (" +
                     User_Table._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     User_Table.COLUMN_NAME + TEXT_TYPE + COMMA_SEP +
@@ -44,8 +45,8 @@ public class SQLDefs {
     public static final String SQL_DELETE_USER =
             "DROP TABLE IF EXISTS " + User_Table.TABLE_NAME;
 
-    public static long insert(SQLiteDatabase db, String table, ContentValues values){
-        return db.insert(table,null, values);
+    public static void insert(SQLiteDatabase db, String table, ContentValues values){
+        db.insert(table, null, values);
     }
 
     public static Cursor select(SQLiteDatabase db, String table, String[] fields, String where_field,
@@ -65,38 +66,40 @@ public class SQLDefs {
     public static void update(SQLiteDatabase db, String table, ContentValues new_values,
                               String where_field, String[] where_match){
         where_field += LIKE_MOD;
-        int count = db.update(
-                table,
+        db.update(table,
                 new_values,
                 where_field,
                 where_match);
     }
 
-    public static boolean deleteContact(SQLiteDatabase db, String delete_phone){
+    public static void deleteContact(SQLiteDatabase db, String delete_phone){
         String[] where_match = {delete_phone};
         String where_field = Contact_Table.COLUMN_PHONE + LIKE_MOD;
-        return db.delete(Constants.CONTACT, where_field, where_match)>0 ;
+        db.delete(Constants.CONTACT, where_field, where_match);
     }
 
     public static void allowPhone(SQLiteDatabase db, String phone){
         ContentValues cv = new ContentValues();
         cv.put(Constants.STATUS, 1);
         update(db, Constants.CONTACT, cv, Constants.PHONE, new String[]{phone});
-        MainActivity.getContact(phone).setStatus(1);
+        Contact c =MainActivity.getContact(phone);
+        if(c != null) c.setStatus(1);
     }
 
     public static void requestPhone(SQLiteDatabase db, String phone){
         ContentValues cv = new ContentValues();
         cv.put(Constants.STATUS, 2);
         update(db, Constants.CONTACT, cv, Constants.PHONE, new String[]{phone});
-        MainActivity.getContact(phone).setStatus(2);
+        Contact c = MainActivity.getContact(phone);
+        if(c != null) c.setStatus(2);
     }
 
     public static void denyPhone(SQLiteDatabase db, String delete_phone){
         ContentValues cv = new ContentValues();
         cv.put(Constants.STATUS, 0);
         update(db, Constants.CONTACT, cv, Constants.PHONE, new String[]{delete_phone});
-        MainActivity.getContact(delete_phone).setStatus(0);
+        Contact c = MainActivity.getContact(delete_phone);
+        if(c != null) c.setStatus(0);
     }
 
     public static void denyAllPhone(SQLiteDatabase db){
@@ -106,18 +109,18 @@ public class SQLDefs {
     }
     
     public static class Contact_Table implements BaseColumns {
-        public static final String TABLE_NAME = Constants.CONTACT;
+        static final String TABLE_NAME = Constants.CONTACT;
         public static final String COLUMN_NAME = Constants.NAME;
         public static final String COLUMN_PHONE = Constants.PHONE;
         public static final String COLUMN_LOCATION = Constants.LOCATION;
         public static final String COLUMN_TIME = Constants.TIME;
-        public static final String COLUMN_CONTACTS = Constants.CONTACTS;
+        static final String COLUMN_CONTACTS = Constants.CONTACTS;
         public static final String COLUMN_STATUS = Constants.STATUS;
         public static final String COLUMN_UID = Constants.UID;
     }
 
     public static class User_Table implements BaseColumns {
-        public static final String TABLE_NAME = Constants.USER;
+        static final String TABLE_NAME = Constants.USER;
         public static final String COLUMN_NAME = Constants.NAME;
         public static final String COLUMN_PHONE = Constants.PHONE;
         public static final String COLUMN_UID = Constants.UID;

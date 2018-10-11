@@ -1,7 +1,5 @@
 package com.fgapps.tracku.helper;
 
-import java.util.Calendar;
-
 /**
  * Created by (Engenharia) Felipe on 26/03/2018.
  */
@@ -18,11 +16,11 @@ public class Constants {
     public static final String PHONE = "phone";
     public static final String LOCATION = "location";
     public static final String TIME = "time";
-    public static final String ONLINE = "online";
+    //public static final String ONLINE = "online";
     public static final String CONTACTS = "contacts";
     public static final String CONTACT = "contact";
     public static final String USER = "user";
-    public static final String ALLOWED = "allowed";
+    //public static final String ALLOWED = "allowed";
     public static final String STATUS = "status";
     public static final String PHOTO = "photo";
 

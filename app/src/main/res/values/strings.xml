@@ -2,4 +2,10 @@
     <string name="app_name">TrackU</string>
     <string name="title_activity_maps">Map</string>
     <string name="default_notification_channel_id">push_id_01</string>
+
+    <string name="waiting_location">Aguardando localização...</string>
+
+    <string name="change_name">Alterar nome</string>
+    <string name="new_contact_name">Digite um novo nome para o contato:</string>
+
 </resources>

@@ -10,11 +10,9 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
-import android.support.annotation.DrawableRes;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,8 +63,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private FloatingActionButton btnMode;
     private FloatingActionButton btnType;
-    private FloatingActionButton btnZoom;
-    private Button btnVoltar;
     private TextView txtEndereco;
     private TextView txtEndereco2;
     private SeekBar skZoom;
@@ -74,9 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static List<Address> addresses;
     private static ArrayList<Marker> markers;
 
-    private static View mCustomMarkerView;
     private RealtimeDatabase rtdb;
-    private MapListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,10 +81,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        listener = new MapListener(this);
+        MapListener listener = new MapListener(this);
         markers = new ArrayList<>();
 
-        btnVoltar = findViewById(R.id.voltarMap_id);
+        Button btnVoltar = findViewById(R.id.voltarMap_id);
         btnVoltar.setOnClickListener(listener);
 
         btnMode = findViewById(R.id.btnMode_id);
@@ -99,11 +93,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnType = findViewById(R.id.btnType_id);
         btnType.setOnClickListener(listener);
 
-        btnZoom = findViewById(R.id.btnZoom_id);
+        FloatingActionButton btnZoom = findViewById(R.id.btnZoom_id);
         btnZoom.setOnClickListener(listener);
 
         txtEndereco = findViewById(R.id.endereco_id);
-        txtEndereco.setText("Aguardando localização...");
+        txtEndereco.setText(getResources().getString(R.string.waiting_location));
 
         txtEndereco2 = findViewById(R.id.endereco2_id);
         txtEndereco2.setText("");
@@ -154,7 +148,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     m.remove();
                 }
 
-                mCustomMarkerView = ((LayoutInflater) MainActivity.currentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                View mCustomMarkerView = ((LayoutInflater) MainActivity.currentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                         .inflate(R.layout.custom_marker, null);
 
 
@@ -207,12 +201,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             loc.longitude,
                             // In this sample, get just a single addresses.
                             1);
-                } catch (IOException ioException) {
+                } catch (IOException | IllegalArgumentException ioException) {
                     // Catch network or other I/O problems.
-                } catch (IllegalArgumentException illegalArgumentException) {
-                    // Catch invalid latitude or longitude values.
                 }
                 if (addresses == null || addresses.size() == 0) {
+                    Log.v("MAPS_ACTIVITY", "Não foi possível traduzir o endereço");
                 } else {
                     Address address = addresses.get(0);
 
@@ -258,13 +251,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             while (MainActivity.currentActivity instanceof MapsActivity) {
                 sleep(3000);
                 final String[] a = getAdress4Loc(position).split(" - ");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(a.length>1) {
-                            txtEndereco.setText(a[0]);
-                            txtEndereco2.setText(a[1]);
-                        }
+                runOnUiThread(() -> {
+                    if(a.length>1) {
+                        txtEndereco.setText(a[0]);
+                        txtEndereco2.setText(a[1]);
                     }
                 });
             }
