@@ -4,8 +4,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 import android.location.LocationManager;
+import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.fgapps.tracku.activity.LoginActivity;
 import com.fgapps.tracku.activity.MainActivity;
@@ -24,6 +28,8 @@ import com.google.android.gms.location.LocationServices;
 
 public class LocationService extends Service {
 
+    private final IBinder locationBinder = new LocationBinder();
+
     private static LocationService locationService;
     private static boolean running = false;
     private static String location;
@@ -32,9 +38,11 @@ public class LocationService extends Service {
     private LocationCallback mLocationCallback;
     private FusedLocationProviderClient mFusedLocationClient;
     private RealtimeDatabase rtdb;
+    private Location prev_location;
 
     private String database;
     private String userphone;
+    private float distance;
 
     public LocationService() {
         locationService = this;
@@ -52,6 +60,7 @@ public class LocationService extends Service {
                 if (locationResult == null) {
                     return;
                 }
+
                 String lt = Double.toString(locationResult.getLastLocation().getLatitude());
                 String lg = Double.toString(locationResult.getLastLocation().getLongitude());
                 location = lt+","+lg;
@@ -60,18 +69,34 @@ public class LocationService extends Service {
                     MapsActivity.updateMap(lt, lg, true);
                 }
 
-                if(SyncDatabases.isOnline()) {
-                    if(rtdb == null) rtdb = new RealtimeDatabase();
-                    rtdb.sendLocation(location, database, userphone);
+                Location cur_loc = new Location("current");
+                cur_loc.setLatitude(Double.parseDouble(lt));
+                cur_loc.setLongitude(Double.parseDouble(lg));
+                Log.v("LOCATION_SERVICE_DIST", "New value set to cur_loc");
+
+                if(prev_location != null)
+                    Log.v("LOCATION_SERVICE_DIST", cur_loc.distanceTo(prev_location)+">"+distance);
+
+                if(prev_location != null && cur_loc.distanceTo(prev_location) > distance) {
+                    if(prev_location != null)
+                        Log.v("LOCATION_SERVICE_DIST", cur_loc.distanceTo(prev_location)+">"+distance);
+                    sendCoordnates(cur_loc);
+                }else{
+                    if(prev_location == null) {
+                        Log.v("LOCATION_SERVICE_DIST", "prev_location is NULL");
+                        sendCoordnates(cur_loc);
+                    }
                 }
 
+                SaveLoadService sls = SaveLoadService.getInstance(locationService);
                 if(MainActivity.currentActivity == null){
-                    SaveLoadService sls = SaveLoadService.getInstance(locationService);
                     if(!sls.getConfigService()){
                         locationService.stopForeground(true);
                         locationService.stopSelf();
                         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
                     }
+                }else{
+                    distance = sls.getDistConfig();
                 }
             }
         };
@@ -88,8 +113,19 @@ public class LocationService extends Service {
         super.onCreate();
         rtdb = new RealtimeDatabase();
 
+        SaveLoadService sls = SaveLoadService.getInstance(locationService);
+        distance = sls.getDistConfig();
+
         database = Constants.DATABASE;//"tracku-users";
         userphone = getUserphoneFromDB();
+    }
+
+    private void sendCoordnates(Location cur_loc){
+        if (SyncDatabases.isOnline()) {
+            if (rtdb == null) rtdb = new RealtimeDatabase();
+            rtdb.sendLocation(location, database, userphone);
+        }
+        prev_location = cur_loc;
     }
 
     private String getUserphoneFromDB(){
@@ -152,7 +188,7 @@ public class LocationService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return locationBinder;
     }
 
     public static LocationService getLocationService() {
@@ -161,5 +197,9 @@ public class LocationService extends Service {
 
     public static boolean isRunning() {
         return running;
+    }
+
+    public class LocationBinder extends Binder {
+        public LocationService getService() { return LocationService.this; }
     }
 }

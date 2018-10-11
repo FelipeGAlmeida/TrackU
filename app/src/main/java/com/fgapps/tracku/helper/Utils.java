@@ -79,7 +79,10 @@ public class Utils {
                     "&text=" + URLEncoder.encode("Pedi que compartilhasse sua localização comigo via " +
                     "TrackU, Clique abaixo ou entre no aplicativo agora para ver meu pedido.\n\n" +
                     "https://tracku.com/request\n" +
-                    "_(se perguntado, selecione o *TrackU*)_", "UTF-8");
+                    "_(se perguntado, selecione o *TrackU*)_\n\n" +
+                    "Caso não possua o aplicativo, faça download pelo link abaixo:\n" +
+                    "https://tracku-fgapps.firebaseapp.com/\n\n" +
+                    "Obrigado.", "UTF-8");
             i.setPackage("com.whatsapp");
             i.setData(Uri.parse(url));
             if (i.resolveActivity(packageManager) != null) {

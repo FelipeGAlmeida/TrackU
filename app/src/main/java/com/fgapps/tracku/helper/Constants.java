@@ -30,5 +30,6 @@ public class Constants {
     public static final String DEL = "del";
     public static final String CONFIG_SERVICE = "config_service";
     public static final String MAP_TYPE = "map_type";
+    public static final String DISTANCE = "distance";
 
 }

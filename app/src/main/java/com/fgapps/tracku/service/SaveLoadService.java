@@ -95,4 +95,18 @@ public class SaveLoadService {
 
         return mShPref.getInt(Constants.MAP_TYPE, 1);
     }
+
+    public boolean saveDistConfig(int d){
+        initUserFile();
+
+        mShEditor = mShPref.edit();
+        mShEditor.putInt(Constants.DISTANCE, d);
+        return mShEditor.commit();
+    }
+
+    public int getDistConfig(){
+        initUserFile();
+
+        return mShPref.getInt(Constants.DISTANCE, 2500);
+    }
 }

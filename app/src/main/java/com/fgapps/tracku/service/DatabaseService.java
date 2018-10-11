@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -13,6 +14,8 @@ import com.fgapps.tracku.sqlite.SQLDatabase;
 import com.fgapps.tracku.sqlite.SQLDefs;
 
 public class DatabaseService extends Service {
+
+    private final IBinder databaseBinder = new DatabaseBinder();
 
     private static DatabaseService databaseService;
 
@@ -45,11 +48,6 @@ public class DatabaseService extends Service {
         super.onCreate();
 
         userphone = getUserphoneFromDB();
-
-        if(SaveLoadService.getInstance(this).getConfigService()) {
-            Intent intent = new Intent(this, LocationService.class);
-            startService(intent);
-        }
     }
 
     private String getUserphoneFromDB(){
@@ -75,7 +73,7 @@ public class DatabaseService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return databaseBinder;
     }
 
     public static boolean isRunning() {
@@ -84,5 +82,9 @@ public class DatabaseService extends Service {
 
     public static DatabaseService getDatabaseService() {
         return databaseService;
+    }
+
+    public class DatabaseBinder extends Binder {
+        public DatabaseService getService() { return DatabaseService.this; }
     }
 }

@@ -1,11 +1,15 @@
 package com.fgapps.tracku.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -40,6 +44,9 @@ import static android.os.SystemClock.sleep;
 public class MainActivity extends AppCompatActivity {
 
     public static Activity currentActivity;
+    private LocationService locationService;
+    private DatabaseService databaseService;
+
     private static ArrayList<Contact> contacts;
     private static HashMap<Integer,CardView> selected;
     private static boolean isSharing;
@@ -57,7 +64,12 @@ public class MainActivity extends AppCompatActivity {
     private RealtimeDatabase rtdb;
     private MainListener listener;
     private ListAdapter adapter;
+    private Intent locationIntent;
+    private Intent databaseIntent;
     private Thread t;
+
+    private boolean locationBound;
+    private boolean databaseBound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,14 +118,6 @@ public class MainActivity extends AppCompatActivity {
 
         SyncDatabases sync = new SyncDatabases(this);
         sync.start();
-
-        Intent i = new Intent(this, LocationService.class);
-        startService(i);
-
-        Intent i2 = new Intent(this, DatabaseService.class);
-        if(DatabaseService.isRunning())
-            stopService(i2);
-        startService(i2);
 
         t = new Thread(activityControl);
         t.start();
@@ -185,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         currentActivity = this;
+        startServices();
         getContactsFromDb(false);
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -212,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
         SaveLoadService sls = SaveLoadService.getInstance(this);
         if(!sls.getConfigService()){
             stopService(new Intent(this, LocationService.class));
+            unbindService(locationConnection);
         }
         Dialogs.dismissLoadingDialog(false);
     }
@@ -247,5 +253,48 @@ public class MainActivity extends AppCompatActivity {
 
     public static void isSharing(boolean b){
         isSharing = b;
+    }
+
+    //SERVICE BINDER
+    private ServiceConnection locationConnection = new ServiceConnection(){
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            LocationService.LocationBinder binder = (LocationService.LocationBinder)service;
+            locationService = binder.getService(); //get service
+            locationBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            locationBound = false;
+        }
+    };
+
+    private ServiceConnection databaseConnection = new ServiceConnection(){
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            DatabaseService.DatabaseBinder binder = (DatabaseService.DatabaseBinder) service;
+            databaseService = binder.getService(); //get service
+            databaseBound= true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            databaseBound = false;
+        }
+    };
+
+    private void startServices(){
+        if(databaseIntent==null)
+            databaseIntent = new Intent(this, DatabaseService.class);
+        bindService(databaseIntent, databaseConnection, Context.BIND_AUTO_CREATE);
+        startService(databaseIntent);
+
+        if(locationIntent==null)
+            locationIntent = new Intent(this, LocationService.class);
+        bindService(locationIntent, locationConnection, Context.BIND_AUTO_CREATE);
+        startService(locationIntent);
     }
 }
